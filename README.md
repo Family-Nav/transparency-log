@@ -2,10 +2,10 @@
 
 This document explains the public transparency log used by FamilyNav from the point of view of a report recipient, attorney, or court official. It describes what the log is, why it exists, what is published, and simple step‑by‑step instructions to independently verify a report's existence and integrity.
 
-> Short summary
-> - FamilyNav cryptographically signs each generated report and registers a small, non‑sensitive record of that report in a public transparency log.
-> - The log is published as timestamped batch files to a public GitHub repository hourly. This creates an independent, append‑only record that third parties can audit.
-> - The public log contains only verification metadata (verification codes, cryptographic hashes, signatures, timestamps) — it does not contain personal data, GPS, or report contents.
+Short summary
+- FamilyNav cryptographically signs each generated report and registers a small, non‑sensitive record of that report in a public transparency log.
+- The log is published as timestamped batch files to a public GitHub repository hourly. This creates an independent, append‑only record that third parties can audit.
+- The public log contains only verification metadata (verification codes, cryptographic hashes, signatures, timestamps) — it does not contain personal data, GPS, or report contents.
 
 Contents
 - What is the transparency log?
@@ -33,7 +33,7 @@ This allows someone who has the report (for example a parent, attorney, or court
 
 Published (public):
 - Verification code (short human-friendly code printed on the report)
-- Cryptographic content hash of the report (e.g., SHA-256)
+- Cryptographic content hash of the report (for example, SHA-256)
 - Signature metadata (signature, signer key id)
 - Batch Merkle root and batch commit metadata (commit SHA, timestamp)
 - Publication timestamps and counts (when the batch was published, entry counts)
@@ -58,28 +58,34 @@ The public entries are intentionally minimal so anyone can verify integrity with
 
 ## How to verify a report — quick checklist
 
-Assumptions: you have the physical or digital report and a verification code printed on it (e.g., `ABC12345`). You may also have the signed report file (PDF or JSON) produced by FamilyNav.
+Assumptions: you have the physical or digital report and a verification code printed on it (for example, ABC12345). You may also have the signed report file (PDF or JSON) produced by FamilyNav.
 
 1. Locate the verification code on the report.
 2. Option A — Use the public verification page:
-   - Visit the public verify URL: https://<familynav‑site>/verify/<CODE> (the application’s Verify page is public and shows verification and transparency status).
+   - Visit the public verify URL: https://<familynav-site>/verify/<CODE>. The application’s Verify page is public and shows verification and transparency status.
    - The page will show whether the report signature is valid and whether the entry is published in the transparency log, including a GitHub commit link if published.
 
    Option B — Verify manually via the public transparency repository:
-   - Go to the public transparency repository (published batches). Example: `https://github.com/familynav/transparency-log` (the repository and path are listed on the Transparency page).
-   - Search the recent batch files for the verification code or data hash.
+   - Go to the public transparency repository that contains published batches. The repository and path are listed on FamilyNav’s Transparency page.
+   - Search the recent batch files for the verification code or the data hash.
+
 3. Confirm the entry line:
    - Each published batch is a JSON Lines (newline-delimited JSON) file. An entry will include the verification code and a data hash.
+
 4. Verify the report contents match the data hash:
-   - If you have the actual report file, compute its cryptographic hash (e.g., SHA-256) using a standard tool:
-     - Example: `sha256sum report.pdf` (Linux/macOS), or use a GUI hash tool.
+   - If you have the actual report file, compute its cryptographic hash (for example, SHA-256) using a standard tool:
+     - Example command on Linux or macOS: sha256sum report.pdf
+     - Or use any GUI hash tool to compute SHA-256.
    - Confirm the computed hash matches the data_hash recorded in the transparency entry.
+
 5. Confirm the entry is anchored in a Git commit:
    - In the batch commit metadata on GitHub, confirm the file containing the entry appears in the listed commit and that the commit timestamp is correct.
-   - Optionally verify commit history and provenance on GitHub (view diff/commit).
+   - Optionally review the commit history and provenance on GitHub (view diffs and commit metadata).
+
 6. Verify the signature:
    - Confirm the signed statement and signature on the report are valid using the signer key id and FamilyNav’s published public key.
-   - Tools vary by signature format; FamilyNav provides signature metadata and signer key id alongside the report. Use standard crypto tools to verify (OpenPGP, RSA, or algorithm specified in the report).
+   - Use the standard cryptographic verification tools appropriate for the signature algorithm specified with the report.
+
 7. If all checks pass:
    - The report you hold matches the published registry entry (data hash), the report signature is valid, and the entry was published to an independently auditable public ledger (GitHub). This provides strong evidence the report existed as claimed and has not been modified.
 
@@ -90,10 +96,10 @@ If any check fails (hash mismatch, missing entry, invalid signature), the report
 ## Example verification flow (concise)
 
 - From the report: verification code ABC12345.
-- On the public Transparency page, search ABC12345 → find entry with data_hash H and signature S.
-- On GitHub, find batch JSONL that contains ABC12345; confirm commit SHA and timestamp.
-- Compute SHA-256(report.pdf) → must equal H.
-- Verify signature S using the published signer public key → must validate.
+- On the public Transparency page, search ABC12345 and find the entry with a data_hash H and signature S.
+- On GitHub, find the batch JSONL that contains ABC12345; confirm the commit SHA and timestamp.
+- Compute SHA-256(report.pdf) and confirm it equals H.
+- Verify signature S using the published signer public key and confirm it validates.
 
 ---
 
@@ -112,14 +118,14 @@ If any check fails (hash mismatch, missing entry, invalid signature), the report
 ## Security & privacy considerations
 
 - The system is intentionally conservative about what is published publicly — only index-like metadata and cryptographic material.
-- No personal data or location traces are published. If you need the actual report, you must get it from the report issuer/possession chain (the report recipient).
+- No personal data or location traces are published. If you need the actual report, you must get it from the report issuer or the person who provided the report.
 - The transparency registry is a public audit trail, not a data access channel.
 
 ---
 
 ## If you're an attorney or court official — practical guidance
 
-- If a party submits a FamilyNav report in evidence, ask for the verification code printed on the report (or the signed file).
+- If a party submits a FamilyNav report in evidence, ask for the verification code printed on the report or the signed file.
 - Use the steps above to independently verify the report's hash, signature, and presence in the transparency log.
 - If you require a formal attestation from FamilyNav, the organization can provide logs, key information, or signed attestations as needed subject to their policies.
 
@@ -127,7 +133,7 @@ If any check fails (hash mismatch, missing entry, invalid signature), the report
 
 ## Contact / support
 
-If you have questions about verification steps, need the FamilyNav signer public key, or want help verifying a specific report, please contact the FamilyNav support team (contact info is available in the application or at www.familynav.com) or the custodian/administrator who provided the report.
+If you have questions about verification steps, need the FamilyNav signer public key, or want help verifying a specific report, please contact the FamilyNav support team (contact info is available in the application or at www.familynav.app) or the custodian/administrator who provided the report.
 
 ---
 
